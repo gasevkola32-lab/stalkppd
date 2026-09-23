@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Профиль Сталкера | Заброшенные места</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --panel-color: #2d2d2d;
+            --accent-color: #ff4a4a;
+            --text-color: #ffffff;
+            --muted-text: #aaaaaa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--panel-color);
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--muted-text);
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #e03a3a;
+        }
+
+        .places-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .places-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .place-card {
+            background-color: var(--panel-color);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .place-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .place-card .meta {
+            font-size: 0.85rem;
+            color: var(--muted-text);
+            margin-bottom: 10px;
+        }
+
+        .place-card .desc {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-easy { background-color: #2e7d32; }
+        .badge-medium { background-color: #f57c00; }
+        .badge-hard { background-color: #d32f2f; }
+
+        .btn-delete {
+            background-color: transparent;
+            color: #ff4a4a;
+            border: 1px solid #ff4a4a;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            align-self: flex-start;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(255, 74, 74, 0.1);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--muted-text);
+            padding: 40px;
+            border: 2px dashed #444;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>STALKER_NET</h1>
+        <div id="user-info">Личный профиль: <strong>Исследователь</strong></div>
+    </header>
+
+    <div class="container">
+        <!-- Панель добавления (Левая колонка) -->
+        <div class="panel">
+            <h2>Добавить заброшку</h2>
+            <form id="add-place-form">
+                <div class="form-group">
+                    <label for="title">Название объекта *</label>
+                    <input type="text" id="title" required placeholder="Например: Завод 'Октябрь'">
+                </div>
+                <div class="form-group">
+                    <label for="location">Локация / Координаты *</label>
+                    <input type="text" id="location" required placeholder="г. Новороссийск, ул...">
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">Сложность доступа</label>
+                    <select id="difficulty">
+                        <option value="easy">Легко (Свободный вход)</option>
+                        <option value="medium">Средне (Забор / Охрана)</option>
+                        <option value="hard">Сложно (ЧОП / Камеры)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Описание и заметки</label>
+                    <textarea id="description" rows="4" placeholder="Как пройти, что внутри, состояние перекрытий..."></textarea>
+                </div>
+                <button type="submit">Сохранить в профиль</button>
+            </form>
+        </div>
+
+        <!-- Список сохраненных мест (Правая колонка) -->
+        <div>
+            <h2>Мои сохраненные объекты (<span id="count">0</span>)</h2>
+            <div class="places-list" id="places-container">
+                <!-- Сюда JavaScript будет добавлять карточки -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных из localStorage или пустой массив
+        let myPlaces = JSON.parse(localStorage.getItem('myPlaces')) || [];
+
+        const form = document.getElementById('add-place-form');
+        const container = document.getElementById('places-container');
+        const countSpan = document.getElementById('count');
+
+        // Функция для отрисовки всех карточек
+        function renderPlaces() {
+            container.innerHTML = '';
+            countSpan.textContent = myPlaces.length;
+
+            if (myPlaces.length === 0) {
+                container.innerHTML = `<div class="empty-state">У вас пока нет сохраненных объектов. Добавьте свой первый объект через форму слева.</div>`;
+                return;
+            }
+
+            myPlaces.forEach((place, index) => {
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                
+                let badgeClass = 'badge-easy';
+                let badgeText = 'Легко';
+                if (place.difficulty === 'medium') { badgeClass = 'badge-medium'; badgeText = 'Средне'; }
+                if (place.difficulty === 'hard') { badgeClass = 'badge-hard'; badgeText = 'Сложно'; }
+
+                card.innerHTML = `
+                    <div>
+                        <h3>${escapeHtml(place.title)}</h3>
+                        <div class="meta">
+                            📍 ${escapeHtml(place.location)} <br>
+                            <span class="badge ${badgeClass}" style="margin-top: 5px;">${badgeText}</span>
+                        </div>
+                        <div class="desc">${escapeHtml(place.description) || '<i>Описание отсутствует</i>'}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deletePlace(${index})">Удалить</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Обработчик отправки формы
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newPlace = {
+                title: document.getElementById('title').value,
+                location: document.getElementById('location').value,
+                difficulty: document.getElementById('difficulty').value,
+                description: document.getElementById('description').value
+            };
+
+            myPlaces.push(newPlace);
+            localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+            
+            renderPlaces();
+            form.reset(); // Очистить форму после добавления
+        });
+
+        // Функция удаления объекта
+        window.deletePlace = function(index) {
+            if (confirm('Вы уверены, что хотите удалить этот объект из профиля?')) {
+                myPlaces.splice(index, 1);
+                localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+                renderPlaces();
+            }
+        }
+
+        // Безопасный вывод текста (защита от XSS)
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });

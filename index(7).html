@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Профиль Сталкера | Списки мест</title>
+    <!-- Встроенная иконка (Favicon) в виде знака радиации -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☢️</text></svg>">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --panel-color: #2d2d2d;
+            --accent-color: #ff4a4a;
+            --success-color: #2e7d32;
+            --text-color: #ffffff;
+            --muted-text: #aaaaaa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--panel-color);
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--muted-text);
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #e03a3a;
+        }
+
+        /* Кнопки резервного копирования */
+        .backup-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #555;
+            color: var(--muted-text);
+            padding: 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: #3d3d3d;
+            color: #fff;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background-color: var(--panel-color);
+            color: var(--text-color);
+            border: 1px solid #444;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            width: auto;
+            font-weight: normal;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .places-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .places-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .place-card {
+            background-color: var(--panel-color);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .place-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .place-card .meta {
+            font-size: 0.85rem;
+            color: var(--muted-text);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .place-card .desc {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .badges-wrapper {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-easy { background-color: #2e7d32; }
+        .badge-medium { background-color: #f57c00; }
+        .badge-hard { background-color: #d32f2f; }
+        .badge-list { background-color: #444; color: #fff; }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .btn-delete {
+            background-color: transparent;
+            color: #ff4a4a;
+            border: 1px solid #ff4a4a;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(255, 74, 74, 0.1);
+        }
+
+        .btn-status {
+            background-color: var(--success-color);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-status:hover {
+            background-color: #246327;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--muted-text);
+            padding: 40px;
+            border: 2px dashed #444;
+            border-radius: 8px;
+        }
+
+        #file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>STALKER_NET</h1>
+        <div id="user-info">Личный профиль: <strong>Исследователь</strong></div>
+    </header>
+
+    <div class="container">
+        <!-- Панель управления (Левая колонка) -->
+        <div class="panel">
+            <h2>Добавить заброшку</h2>
+            <form id="add-place-form">
+                <div class="form-group">
+                    <label for="title">Название объекта *</label>
+                    <input type="text" id="title" required placeholder="Например: Цементный завод 'Октябрь'">
+                </div>
+                <div class="form-group">
+                    <label for="location">Локация / Координаты *</label>
+                    <input type="text" id="location" required placeholder="г. Новороссийск, Восточный район">
+                </div>
+                <div class="form-group">
+                    <label for="list-category">Добавить в список *</label>
+                    <select id="list-category">
+                        <option value="all-saved">📍 Основной список</option>
+                        <option value="want-to-visit">⭐ Хочу посетить</option>
+                        <option value="visited">✅ Уже исследовано</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">Сложность доступа</label>
+                    <select id="difficulty">
+                        <option value="easy">Легко (Свободный вход)</option>
+                        <option value="medium">Средне (Забор / Охрана)</option>
+                        <option value="hard">Сложно (ЧОП / Камеры)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Описание и заметки</label>
+                    <textarea id="description" rows="4" placeholder="Особенности охраны, состояние здания..."></textarea>
+                </div>
+                <button type="submit">Сохранить в профиль</button>
+            </form>
+
+            <!-- Блок резервного копирования данных -->
+            <div class="backup-zones">
+                <button class="btn-secondary" onclick="exportData()">💾 Экспорт данных</button>
+                <button class="btn-secondary" onclick="document.getElementById('file-input').click()">📂 Импорт данных</button>
+                <input type="file" id="file-input" accept=".json" onchange="importData(event)">
+            </div>
+        </div>
+
+        <!-- Раздел списков (Правая колонка) -->
+        <div>
+            <h2>Мои сохраненные объекты</h2>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('all')" id="tab-all">Все (<span id="count-all">0</span>)</button>
+                <button class="tab-btn" onclick="switchTab('all-saved')" id="tab-all-saved">Основной список (<span id="count-all-saved">0</span>)</button>
+                <button class="tab-btn" onclick="switchTab('want-to-visit')" id="tab-want-to-visit">Хочу посетить (<span id="count-want">0</span>)</button>
+                <button class="tab-btn" onclick="switchTab('visited')" id="tab-visited">Уже исследовано (<span id="count-visited">0</span>)</button>
+            </div>
+
+            <div class="places-list" id="places-container">
+                <!-- Сюда JavaScript выводит отфильтрованные карточки -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myPlaces = JSON.parse(localStorage.getItem('myPlaces')) || [];
+        let currentFilter = 'all';
+
+        const form = document.getElementById('add-place-form');
+        const container = document.getElementById('places-container');
+
+        function updateCounters() {
+            document.getElementById('count-all').textContent = myPlaces.length;
+            document.getElementById('count-all-saved').textContent = myPlaces.filter(p => p.listCategory === 'all-saved').length;
+            document.getElementById('count-want').textContent = myPlaces.filter(p => p.listCategory === 'want-to-visit').length;
+            document.getElementById('count-visited').textContent = myPlaces.filter(p => p.listCategory === 'visited').length;
+        }
+
+        window.switchTab = function(filterValue) {
+            currentFilter = filterValue;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if(filterValue === 'all') document.getElementById('tab-all').classList.add('active');
+            if(filterValue === 'all-saved') document.getElementById('tab-all-saved').classList.add('active');
+            if(filterValue === 'want-to-visit') document.getElementById('tab-want-to-visit').classList.add('active');
+            if(filterValue === 'visited') document.getElementById('tab-visited').classList.add('active');
+
+            renderPlaces();
+        }
+
+        window.changeStatus = function(index, newStatus) {
+            myPlaces[index].listCategory = newStatus;
+            localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+            renderPlaces();
+        }
+
+        function renderPlaces() {
+            container.innerHTML = '';
+            updateCounters();
+
+            const filteredPlaces = myPlaces.filter(place => {
+                if (currentFilter === 'all') return true;
+                return place.listCategory === currentFilter;
+            });
+
+            if (filteredPlaces.length === 0) {
+                container.innerHTML = `<div class="empty-state">В этом списке пока нет объектов.</div>`;
+                return;
+            }
+
+            filteredPlaces.forEach((place) => {
+                const originalIndex = myPlaces.indexOf(place);
+
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                
+                let badgeClass = 'badge-easy';
+                let badgeText = 'Легко';
+                if (place.difficulty === 'medium') { badgeClass = 'badge-medium'; badgeText = 'Средне'; }
+                if (place.difficulty === 'hard') { badgeClass = 'badge-hard'; badgeText = 'Сложно'; }
+
+                let listText = 'Основной список';
+                let statusButton = '';
+                
+                if (place.listCategory === 'want-to-visit') {
+                    listText = 'Хочу посетить';
+                    statusButton = `<button class="btn-status" onclick="changeStatus(${originalIndex}, 'visited')">✅ Исследовано</button>`;
+                } else if (place.listCategory === 'visited') {
+                    listText = 'Уже исследовано';
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <h3>${escapeHtml(place.title)}</h3>
+                        <div class="meta">
+                            📍 ${escapeHtml(place.location)} <br>
+                            <div class="badges-wrapper">
+                                <span class="badge ${badgeClass}">${badgeText}</span>
+                                <span class="badge badge-list">${listText}</span>
+                            </div>
+                        </div>
+                        <div class="desc">${escapeHtml(place.description) || '<i>Описание отсутствует</i>'}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-delete" onclick="deletePlace(${originalIndex})">Удалить</button>
+                        ${statusButton}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newPlace = {
+                title: document.getElementById('title').value,
+                location: document.getElementById('location').value,
+                listCategory: document.getElementById('list-category').value,
+                difficulty: document.getElementById('difficulty').value,
+                description: document.getElementById('description').value
+            };
+
+            myPlaces.push(newPlace);
+            localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+            
+            switchTab(newPlace.listCategory);
+            form.reset();
+        });
+
+        window.deletePlace = function(index) {
+            if (confirm('Вы уверены, что хотите удалить этот объект?')) {
+                myPlaces.splice(index, 1);
+                localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+                renderPlaces();
+            }
+        }
+
+        window.exportData = function() {
+            if (myPlaces.length === 0) {
+                alert('У вас нет данных для сохранения!');
+                return;
+            }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(myPlaces));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "stalker_places_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        window.importData = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Найдено объектов: ${imported.length}. Объединить с текущими данными? (Отмена сотрет старые и запишет новые)`)) {
+                            myPlaces = myPlaces.concat(imported);
+                        } else {
+                            myPlaces = imported;
+                        }
+                        localStorage.setItem('myPlaces', JSON.stringify(myPlaces));
+                        renderPlaces();
+                        alert('Данные успешно импортированы!');
+                    } else {
+                        alert('Неверный формат файла резервной копии.');
+                    }
+                } catch (err) {
+                    alert('Ошибка при чтении файла.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        renderPlaces();
+    </script>
+</body>
+</html>
